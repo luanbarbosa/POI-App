@@ -8,11 +8,15 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import io.reactivex.*
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
-data class CurrentLocation(val latitude: Double, val longitude: Double)
+data class CurrentLocation(val latitude: Double, val longitude: Double) {
+
+    val latLong: LatLng
+        get() = LatLng(latitude, longitude)
+}
 
 private fun Location.toCurrentLocation() = CurrentLocation(this.latitude, this.longitude)
 
@@ -24,6 +28,7 @@ class LocationViewModel : ViewModel() {
     private val locationRequest: LocationRequest = LocationRequest.create().apply {
         interval = 2000
         fastestInterval = 1000
+        smallestDisplacement = 10f
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
@@ -31,7 +36,6 @@ class LocationViewModel : ViewModel() {
         PublishSubject
             .create<CurrentLocation> { emitter -> listenForLocation(context, emitter) }
             .toFlowable(BackpressureStrategy.LATEST)
-            .observeOn(Schedulers.computation())
 
     /**
      * TL;DR Callback to Rx observable conversion aid.

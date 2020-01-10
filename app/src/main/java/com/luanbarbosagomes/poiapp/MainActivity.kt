@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -61,7 +62,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                locationPermissionCode
+                LOCATION_PERM_CODE
             )
         }
     }
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (requestCode == locationPermissionCode && grantResults.firstOrNull() == PERMISSION_GRANTED) {
+        if (requestCode == LOCATION_PERM_CODE && grantResults.firstOrNull() == PERMISSION_GRANTED) {
             setupLocationUpdate()
         }
     }
@@ -87,12 +88,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         locationViewModel
             .getCurrentLocation(this)
             .subscribe { currentLocation ->
+                moveToLocation(currentLocation)
+
                 // TODO - update map and trigger POI data fetching (possibly)
             }
             .addTo(disposeBag)
     }
 
+    private fun moveToLocation(location: CurrentLocation) {
+        googleMap?.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(location.latLong, CURRENT_LOCATION_ZOOM)
+        )
+    }
+
     companion object {
-        private const val locationPermissionCode = 111
+        private const val LOCATION_PERM_CODE = 111
+        private const val CURRENT_LOCATION_ZOOM = 14f
     }
 }

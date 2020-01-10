@@ -4,6 +4,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -125,6 +126,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .poiObservable()
             .subscribe { poiList ->
                 addPoiToMap(poiList)
+            }
+            .addTo(disposeBag)
+
+        poiViewModel
+            .errorObservable()
+            .subscribe { error ->
+                Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
             }
             .addTo(disposeBag)
     }

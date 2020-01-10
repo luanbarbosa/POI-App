@@ -35,7 +35,7 @@ data class PoiListResponse(
     }
 }
 
-class UnableToFetchPoiListException : Exception()
+class UnableToFetchPoiListException(message: String) : Exception(message)
 
 class PoiFetcher {
 
@@ -46,7 +46,7 @@ class PoiFetcher {
                 val (response, error) = result
                 when (error) {
                     null -> Single.just(response?.query?.poiList ?: listOf())
-                    else -> Single.error(UnableToFetchPoiListException())
+                    else -> Single.error(UnableToFetchPoiListException("Unable to retrieve POI!"))
                 }
 
             }

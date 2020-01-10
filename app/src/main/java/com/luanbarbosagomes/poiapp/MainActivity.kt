@@ -5,16 +5,21 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var googleMap: GoogleMap
+    private val disposeBag = CompositeDisposable()
+    private var googleMap: GoogleMap? = null
     private lateinit var locationProvider: FusedLocationProviderClient
+    private lateinit var locationViewModel: LocationViewModel
 
     private val hasLocationPermission: Boolean
         get() = ContextCompat.checkSelfPermission(
@@ -25,10 +30,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
+        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
+
         locationProvider = LocationServices.getFusedLocationProviderClient(this)
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
 
-        requestLocationPermission()
+        requestLocationPermission() 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setupLocationUpdate()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        disposeBag.clear()
     }
 
     override fun onMapReady(gMap: GoogleMap) {
@@ -60,7 +77,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupLocationUpdate() {
-        // TODO - setup and observe location changes
+        if (!hasLocationPermission) return
+
+        googleMap?.apply {
+            isMyLocationEnabled = true
+            uiSettings.isMyLocationButtonEnabled = true
+        }
+
+        locationViewModel
+            .getCurrentLocation(this)
+            .subscribe { currentLocation ->
+                // TODO - update map and trigger POI data fetching (possibly)
+            }
+            .addTo(disposeBag)
     }
 
     companion object {

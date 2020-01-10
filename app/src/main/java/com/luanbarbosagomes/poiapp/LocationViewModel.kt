@@ -16,6 +16,9 @@ data class CurrentLocation(val latitude: Double, val longitude: Double)
 
 private fun Location.toCurrentLocation() = CurrentLocation(this.latitude, this.longitude)
 
+/**
+ * [ViewModel] responsible for location based operations, such as location update emission.
+ */
 class LocationViewModel : ViewModel() {
 
     private val locationRequest: LocationRequest = LocationRequest.create().apply {
@@ -31,7 +34,10 @@ class LocationViewModel : ViewModel() {
             .observeOn(Schedulers.computation())
 
     /**
-     * Setup the location listener to emit the [CurrentLocation]
+     * TL;DR Callback to Rx observable conversion aid.
+     *
+     * Setup the location update service listener and emit each result of [LocationCallback]
+     * using [ObservableEmitter].
      */
     private fun listenForLocation(
         context: Context,

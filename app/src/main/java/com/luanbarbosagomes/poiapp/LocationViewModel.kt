@@ -12,13 +12,8 @@ import com.google.android.gms.maps.model.LatLng
 import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
 
-data class CurrentLocation(val latitude: Double, val longitude: Double) {
-
-    val latLong: LatLng
-        get() = LatLng(latitude, longitude)
-}
-
-private fun Location.toCurrentLocation() = CurrentLocation(this.latitude, this.longitude)
+val Location.latLong: LatLng
+    get() = LatLng(latitude, longitude)
 
 /**
  * [ViewModel] responsible for location based operations, such as location update emission.
@@ -32,9 +27,9 @@ class LocationViewModel : ViewModel() {
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
-    fun getCurrentLocation(context: Context): Flowable<CurrentLocation> =
+    fun locationObservable(context: Context): Flowable<Location> =
         PublishSubject
-            .create<CurrentLocation> { emitter -> listenForLocation(context, emitter) }
+            .create<Location> { emitter -> listenForLocation(context, emitter) }
             .toFlowable(BackpressureStrategy.LATEST)
 
     /**
@@ -45,7 +40,7 @@ class LocationViewModel : ViewModel() {
      */
     private fun listenForLocation(
         context: Context,
-        emitter: ObservableEmitter<CurrentLocation>
+        emitter: ObservableEmitter<Location>
     ) {
         LocationServices
             .getFusedLocationProviderClient(context)
@@ -53,7 +48,7 @@ class LocationViewModel : ViewModel() {
                 locationRequest,
                 object : LocationCallback() {
                     override fun onLocationResult(result: LocationResult?) {
-                        result?.lastLocation?.toCurrentLocation()?.let {
+                        result?.lastLocation?.let {
                             emitter.onNext(it)
                         }
                     }

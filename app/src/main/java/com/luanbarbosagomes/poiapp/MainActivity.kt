@@ -1,6 +1,7 @@
 package com.luanbarbosagomes.poiapp
 
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.location.Location
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -18,9 +19,11 @@ import io.reactivex.rxkotlin.addTo
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val disposeBag = CompositeDisposable()
+
+    private lateinit var locationViewModel: LocationViewModel
+
     private var googleMap: GoogleMap? = null
     private lateinit var locationProvider: FusedLocationProviderClient
-    private lateinit var locationViewModel: LocationViewModel
 
     private val hasLocationPermission: Boolean
         get() = ContextCompat.checkSelfPermission(
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         locationViewModel
-            .getCurrentLocation(this)
+            .locationObservable(this)
             .subscribe { currentLocation ->
                 moveToLocation(currentLocation)
 
@@ -95,7 +98,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .addTo(disposeBag)
     }
 
-    private fun moveToLocation(location: CurrentLocation) {
+    private fun moveToLocation(location: Location) {
         googleMap?.animateCamera(
             CameraUpdateFactory.newLatLngZoom(location.latLong, CURRENT_LOCATION_ZOOM)
         )

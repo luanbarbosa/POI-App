@@ -3,6 +3,7 @@ package com.luanbarbosagomes.poiapp
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -13,6 +14,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 
@@ -21,6 +25,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private val disposeBag = CompositeDisposable()
 
     private lateinit var locationViewModel: LocationViewModel
+    private lateinit var poiViewModel: PoiViewModel
 
     private var googleMap: GoogleMap? = null
     private lateinit var locationProvider: FusedLocationProviderClient
@@ -33,8 +38,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
 
         locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
+        poiViewModel = ViewModelProviders.of(this).get(PoiViewModel::class.java)
 
         locationProvider = LocationServices.getFusedLocationProviderClient(this)
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
@@ -45,6 +55,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         setupLocationUpdate()
+        setupPoiDataUpdate()
     }
 
     override fun onPause() {
@@ -54,6 +65,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(gMap: GoogleMap) {
         googleMap = gMap
+        googleMap?.apply {
+            setMapStyle(MapStyleOptions.loadRawResourceStyle(this@MainActivity, R.raw.google_maps_style))
+            setPadding(10, 50, 10, 100)
+            setOnMarkerClickListener { marker ->
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                false
+            }
+        }
 
         if (hasLocationPermission) {
             setupLocationUpdate()
@@ -72,7 +91,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<out String>,
+        permissions: Array<String>,
         grantResults: IntArray
     ) {
         if (requestCode == LOCATION_PERM_CODE && grantResults.firstOrNull() == PERMISSION_GRANTED) {
@@ -85,17 +104,41 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         googleMap?.apply {
             isMyLocationEnabled = true
-            uiSettings.isMyLocationButtonEnabled = true
+            uiSettings.apply {
+                isMyLocationButtonEnabled = true
+                isMapToolbarEnabled = false
+                isZoomControlsEnabled = true
+            }
         }
 
         locationViewModel
             .locationObservable(this)
             .subscribe { currentLocation ->
                 moveToLocation(currentLocation)
-
-                // TODO - update map and trigger POI data fetching (possibly)
+                poiViewModel.fetchPoiData(currentLocation)
             }
             .addTo(disposeBag)
+    }
+
+    private fun setupPoiDataUpdate() {
+        poiViewModel
+            .poiObservable()
+            .subscribe { poiList ->
+                addPoiToMap(poiList)
+            }
+            .addTo(disposeBag)
+    }
+
+    private fun addPoiToMap(poiList: List<Poi>) {
+        googleMap?.clear()
+        poiList.forEach {
+            googleMap?.addMarker(
+                MarkerOptions()
+                    .position(it.latLng)
+                    .title(it.title)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            )
+        }
     }
 
     private fun moveToLocation(location: Location) {
@@ -106,6 +149,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object {
         private const val LOCATION_PERM_CODE = 111
-        private const val CURRENT_LOCATION_ZOOM = 14f
+        private const val CURRENT_LOCATION_ZOOM = 16f
     }
 }

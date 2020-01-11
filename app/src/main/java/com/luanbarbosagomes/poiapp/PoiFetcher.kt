@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Single
+import javax.inject.Inject
 
 data class Poi(
     @SerializedName("pageid")
@@ -37,7 +38,7 @@ data class PoiListResponse(
 
 class UnableToFetchPoiListException(message: String) : Exception(message)
 
-class PoiFetcher {
+class PoiFetcher @Inject constructor() {
 
     fun fetchPoi(location: Location): Single<List<Poi>> =
         Fuel.get(buildPoiUrl(location))
@@ -65,4 +66,5 @@ class PoiFetcher {
         private const val POI_LIMIT = 50
         private const val RADIUS = 10000
     }
+
 }

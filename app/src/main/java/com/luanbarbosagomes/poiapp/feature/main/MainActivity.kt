@@ -1,4 +1,4 @@
-package com.luanbarbosagomes.poiapp
+package com.luanbarbosagomes.poiapp.feature.main
 
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
@@ -17,6 +17,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
+import com.luanbarbosagomes.poiapp.provider.poi.Poi
+import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
+import com.luanbarbosagomes.poiapp.R
 import com.luanbarbosagomes.poiapp.dagger.DaggerMainComponent
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
 import com.luanbarbosagomes.poiapp.provider.location.latLong

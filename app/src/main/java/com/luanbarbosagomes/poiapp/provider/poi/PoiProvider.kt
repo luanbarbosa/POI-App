@@ -1,4 +1,4 @@
-package com.luanbarbosagomes.poiapp
+package com.luanbarbosagomes.poiapp.provider.poi
 
 import android.location.Location
 import com.github.kittinunf.fuel.Fuel
@@ -38,7 +38,7 @@ data class PoiListResponse(
 
 class UnableToFetchPoiListException(message: String) : Exception(message)
 
-class PoiFetcher @Inject constructor() {
+class PoiProvider @Inject constructor() {
 
     fun fetchPoi(location: Location): Single<List<Poi>> =
         Fuel.get(buildPoiUrl(location))
@@ -47,7 +47,9 @@ class PoiFetcher @Inject constructor() {
                 val (response, error) = result
                 when (error) {
                     null -> Single.just(response?.query?.poiList ?: listOf())
-                    else -> Single.error(UnableToFetchPoiListException("Unable to retrieve POI!"))
+                    else -> Single.error(
+                        UnableToFetchPoiListException("Unable to retrieve POI!")
+                    )
                 }
 
             }

@@ -1,10 +1,10 @@
 package com.luanbarbosagomes.poiapp.dagger
 
-import com.luanbarbosagomes.poiapp.MainActivity
-import com.luanbarbosagomes.poiapp.PoiFetcher
-import com.luanbarbosagomes.poiapp.PoiViewModel
+import com.luanbarbosagomes.poiapp.feature.main.MainActivity
 import com.luanbarbosagomes.poiapp.provider.location.LocationProvider
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
+import com.luanbarbosagomes.poiapp.provider.poi.PoiProvider
+import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
 import dagger.Component
 import javax.inject.Singleton
 
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Component
 interface MainComponent {
 
-    fun getPoiFetcher(): PoiFetcher
+    fun getPoiFetcher(): PoiProvider
     fun getLocationProvider(): LocationProvider
 
     fun inject(poiViewModel: PoiViewModel)

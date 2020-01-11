@@ -1,4 +1,4 @@
-package com.luanbarbosagomes.poiapp
+package com.luanbarbosagomes.poiapp.provider.poi
 
 import android.location.Location
 import androidx.lifecycle.ViewModel
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class PoiViewModel @Inject constructor() : ViewModel() {
 
     @Inject
-    lateinit var poiFetcher: PoiFetcher
+    lateinit var poiProvider: PoiProvider
 
     private val disposeBag = CompositeDisposable()
     private val poiListSubject: PublishSubject<List<Poi>> = PublishSubject.create()
@@ -30,7 +30,7 @@ class PoiViewModel @Inject constructor() : ViewModel() {
         poiListSubject.toFlowable(BackpressureStrategy.LATEST)
 
     fun fetchPoiData(location: Location) {
-        poiFetcher
+        poiProvider
             .fetchPoi(location)
             .subscribe { poiList, error ->
                 poiList?.let { poiListSubject.onNext(it) }

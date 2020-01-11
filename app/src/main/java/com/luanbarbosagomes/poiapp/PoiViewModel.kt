@@ -16,8 +16,6 @@ class PoiViewModel @Inject constructor() : ViewModel() {
     @Inject
     lateinit var poiFetcher: PoiFetcher
 
-    private var lastLocationRequested: Location? = null
-
     private val disposeBag = CompositeDisposable()
     private val poiListSubject: PublishSubject<List<Poi>> = PublishSubject.create()
     private val errorSubject: PublishSubject<Throwable> = PublishSubject.create()
@@ -32,14 +30,12 @@ class PoiViewModel @Inject constructor() : ViewModel() {
         poiListSubject.toFlowable(BackpressureStrategy.LATEST)
 
     fun fetchPoiData(location: Location) {
-        if (lastLocationRequested != location) { // avoid duplicated requests
-            poiFetcher
-                .fetchPoi(location)
-                .subscribe { poiList, error ->
-                    poiList?.let { poiListSubject.onNext(it) }
-                    error?.let { errorSubject.onNext(error) }
-                }
-                .addTo(disposeBag)
-        }
+        poiFetcher
+            .fetchPoi(location)
+            .subscribe { poiList, error ->
+                poiList?.let { poiListSubject.onNext(it) }
+                error?.let { errorSubject.onNext(error) }
+            }
+            .addTo(disposeBag)
     }
 }

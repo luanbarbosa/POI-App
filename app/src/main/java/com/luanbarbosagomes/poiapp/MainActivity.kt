@@ -18,6 +18,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.luanbarbosagomes.poiapp.dagger.DaggerMainComponent
+import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
+import com.luanbarbosagomes.poiapp.provider.location.latLong
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
@@ -115,10 +117,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         locationViewModel
-            .locationObservable(this)
+            .locationObservable()
             .subscribe { currentLocation ->
-                moveToLocation(currentLocation)
-                poiViewModel.fetchPoiData(currentLocation)
+                currentLocation?.let {
+                    moveToLocation(it)
+                    poiViewModel.fetchPoiData(it)
+                }
             }
             .addTo(disposeBag)
     }

@@ -3,31 +3,31 @@ package com.luanbarbosagomes.poiapp.feature.main
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.os.Bundle
-import android.view.WindowManager
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.luanbarbosagomes.poiapp.provider.poi.Poi
-import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
 import com.luanbarbosagomes.poiapp.R
 import com.luanbarbosagomes.poiapp.dagger.DaggerMainComponent
+import com.luanbarbosagomes.poiapp.feature.poi.details.PoiDetailsDialog
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
 import com.luanbarbosagomes.poiapp.provider.location.latLong
+import com.luanbarbosagomes.poiapp.provider.poi.Poi
+import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private val disposeBag = CompositeDisposable()
 
@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var poiViewModel: PoiViewModel
 
     private var googleMap: GoogleMap? = null
-    private lateinit var locationProvider: FusedLocationProviderClient
 
     private val hasLocationPermission: Boolean
         get() = ContextCompat.checkSelfPermission(
@@ -49,15 +48,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
 
-        locationProvider = LocationServices.getFusedLocationProviderClient(this)
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
-
-        requestLocationPermission() 
+        requestLocationPermission()
     }
 
     override fun onResume() {
@@ -75,16 +68,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         googleMap = gMap
         googleMap?.apply {
             setMapStyle(MapStyleOptions.loadRawResourceStyle(this@MainActivity, R.raw.google_maps_style))
-            setPadding(10, 50, 10, 100)
-            setOnMarkerClickListener { marker ->
-                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                false
-            }
+            setOnMarkerClickListener(this@MainActivity)
         }
 
         if (hasLocationPermission) {
             setupLocationUpdate()
         }
+    }
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+        marker?.apply {
+            setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            PoiDetailsDialog(
+                this@MainActivity,
+                marker.tag as Poi
+            ).show()
+        }
+        return false
     }
 
     private fun requestLocationPermission() {
@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     .position(it.latLng)
                     .title(it.title)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-            )
+            )?.tag = it
         }
     }
 
@@ -168,4 +168,5 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val LOCATION_PERM_CODE = 111
         private const val CURRENT_LOCATION_ZOOM = 16f
     }
+
 }

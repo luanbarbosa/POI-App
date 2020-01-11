@@ -1,6 +1,7 @@
 package com.luanbarbosagomes.poiapp.dagger
 
 import com.luanbarbosagomes.poiapp.feature.main.MainActivity
+import com.luanbarbosagomes.poiapp.feature.poi.details.PoiDetailsDialog
 import com.luanbarbosagomes.poiapp.provider.location.LocationProvider
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
 import com.luanbarbosagomes.poiapp.provider.poi.PoiProvider
@@ -18,5 +19,6 @@ interface MainComponent {
     fun inject(poiViewModel: PoiViewModel)
     fun inject(mainActivity: MainActivity)
     fun inject(locationViewModel: LocationViewModel)
+    fun inject(poiDetailsDialog: PoiDetailsDialog)
 
 }

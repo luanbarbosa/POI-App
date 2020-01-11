@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -18,15 +17,19 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
+import com.luanbarbosagomes.poiapp.dagger.DaggerMainComponent
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val disposeBag = CompositeDisposable()
 
-    private lateinit var locationViewModel: LocationViewModel
-    private lateinit var poiViewModel: PoiViewModel
+    @Inject
+    lateinit var locationViewModel: LocationViewModel
+    @Inject
+    lateinit var poiViewModel: PoiViewModel
 
     private var googleMap: GoogleMap? = null
     private lateinit var locationProvider: FusedLocationProviderClient
@@ -37,15 +40,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         ) == PERMISSION_GRANTED
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        DaggerMainComponent.create().inject(this)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
-
-        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
-        poiViewModel = ViewModelProviders.of(this).get(PoiViewModel::class.java)
 
         locationProvider = LocationServices.getFusedLocationProviderClient(this)
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)

@@ -11,6 +11,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
+import javax.inject.Inject
 
 val Location.latLong: LatLng
     get() = LatLng(latitude, longitude)
@@ -18,7 +19,7 @@ val Location.latLong: LatLng
 /**
  * [ViewModel] responsible for location based operations, such as location update emission.
  */
-class LocationViewModel : ViewModel() {
+class LocationViewModel @Inject constructor() : ViewModel() {
 
     private val locationRequest: LocationRequest = LocationRequest.create().apply {
         interval = 2000

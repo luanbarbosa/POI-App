@@ -11,7 +11,7 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
-class PoiViewModel : ViewModel() {
+class PoiViewModel @Inject constructor() : ViewModel() {
 
     @Inject
     lateinit var poiFetcher: PoiFetcher

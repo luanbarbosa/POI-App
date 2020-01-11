@@ -12,7 +12,7 @@ val Location.latLong: LatLng
     get() = LatLng(latitude, longitude)
 
 /**
- * [ViewModel] responsible for location based operations, such as location update emission.
+ * [ViewModel] responsible for operations related to location, such as location update handling.
  */
 class LocationViewModel @Inject constructor() : ViewModel() {
 

@@ -9,6 +9,44 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Single
 import javax.inject.Inject
+import javax.inject.Singleton
+
+/**
+ * Provider responsible for retrieving/processing POI related data.
+ */
+@Singleton
+class PoiProvider @Inject constructor() {
+
+    fun fetchPoiList(location: Location): Single<List<Poi>> =
+        Fuel.get(buildPoiListUrl(location))
+            .rxObject(PoiListResponse.Deserializer())
+            .flatMap { result ->
+                val (response, error) = result
+                when (error) {
+                    null -> Single.just(response?.query?.poiList ?: listOf())
+                    else -> Single.error(
+                        UnableToFetchPoiListException("Unable to retrieve POI!")
+                    )
+                }
+
+            }
+
+    private fun buildPoiListUrl(location: Location) =
+        POI_LIST_BASE_URL +
+            "?action=query" +
+            "&list=geosearch" +
+            "&gsradius=$RADIUS" +
+            "&gscoord=${location.latitude}|${location.longitude}" +
+            "&gslimit=$POI_LIMIT" +
+            "&format=json"
+
+    companion object {
+        private const val POI_LIST_BASE_URL = "https://en.wikipedia.org/w/api.php"
+        private const val POI_LIMIT = 50
+        private const val RADIUS = 10000
+    }
+
+}
 
 data class Poi(
     @SerializedName("pageid")
@@ -37,36 +75,3 @@ data class PoiListResponse(
 }
 
 class UnableToFetchPoiListException(message: String) : Exception(message)
-
-class PoiProvider @Inject constructor() {
-
-    fun fetchPoi(location: Location): Single<List<Poi>> =
-        Fuel.get(buildPoiUrl(location))
-            .rxObject(PoiListResponse.Deserializer())
-            .flatMap { result ->
-                val (response, error) = result
-                when (error) {
-                    null -> Single.just(response?.query?.poiList ?: listOf())
-                    else -> Single.error(
-                        UnableToFetchPoiListException("Unable to retrieve POI!")
-                    )
-                }
-
-            }
-
-    private fun buildPoiUrl(location: Location) =
-        POI_LIST_BASE_URL +
-            "?action=query" +
-            "&list=geosearch" +
-            "&gsradius=$RADIUS" +
-            "&gscoord=${location.latitude}|${location.longitude}" +
-            "&gslimit=$POI_LIMIT" +
-            "&format=json"
-
-    companion object {
-        private const val POI_LIST_BASE_URL = "https://en.wikipedia.org/w/api.php"
-        private const val POI_LIMIT = 50
-        private const val RADIUS = 10000
-    }
-
-}

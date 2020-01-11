@@ -11,6 +11,10 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
+/**
+ * [ViewModel] responsible for operations related to Points of Interest (POI), such as POI list
+ * request based on location and POI details.
+ */
 class PoiViewModel @Inject constructor() : ViewModel() {
 
     @Inject
@@ -31,7 +35,7 @@ class PoiViewModel @Inject constructor() : ViewModel() {
 
     fun fetchPoiData(location: Location) {
         poiProvider
-            .fetchPoi(location)
+            .fetchPoiList(location)
             .subscribe { poiList, error ->
                 poiList?.let { poiListSubject.onNext(it) }
                 error?.let { errorSubject.onNext(error) }

@@ -14,6 +14,9 @@ import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Provider responsible for retrieving location data using [LocationServices] given a set of params.
+ */
 @Singleton
 class LocationProvider @Inject constructor() {
 

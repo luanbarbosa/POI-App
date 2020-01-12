@@ -23,13 +23,41 @@ class PoiProvider @Inject constructor() {
             .flatMap { result ->
                 val (response, error) = result
                 when (error) {
-                    null -> Single.just(response?.query?.poiList ?: listOf())
+                    null -> Single.just(response?.poiList)
                     else -> Single.error(
-                        UnableToFetchPoiListException("Unable to retrieve POI!")
+                        UnableToFetchPoiDataException("Unable to retrieve POI!")
                     )
                 }
-
             }
+
+    fun fetchPoiDetails(pageId: Long) =
+        Fuel.get(buildPoiDetailsUrl(pageId))
+            .rxObject(PoiDetailsResponse.Deserializer())
+            .flatMap { result ->
+                val (response, error) = result
+                when (error) {
+                    null -> Single.just(response?.details)
+                    else -> Single.error(
+                        UnableToFetchPoiDataException("Unable to retrieve POI data...")
+                    )
+                }
+            }
+
+    fun fetchImagesUrl(imageName: List<String>): Single<List<String>> =
+        Fuel.get(buildImageUrl(imageName.toTypedArray()))
+            .rxObject(ImagesUrlsResponse.Deserializer())
+            .flatMap { result ->
+                val (response, error) = result
+                when (error) {
+                    null -> Single.just(
+                        response?.urls?.filterNot { it.endsWith(".svg") } ?: listOf()
+                    )
+                    else -> Single.error(
+                        UnableToFetchPoiDataException("Unable to retrieve POI data...")
+                    )
+                }
+            }
+
 
     private fun buildPoiListUrl(location: Location) =
         POI_LIST_BASE_URL +
@@ -40,6 +68,16 @@ class PoiProvider @Inject constructor() {
             "&gslimit=$POI_LIMIT" +
             "&format=json"
 
+    private fun buildPoiDetailsUrl(pageId: Long) =
+        POI_LIST_BASE_URL +
+            "?action=query&prop=info|description|images&pageids=$pageId&inprop=url&format=json"
+
+    private fun buildImageUrl(imageNames: Array<String>) =
+        POI_LIST_BASE_URL +
+            "?action=query&titles=${imageNames.fold("") { acc, str -> "$acc|$str" }}" +
+            "&prop=imageinfo&iiprop=url&format=json"
+
+
     companion object {
         private const val POI_LIST_BASE_URL = "https://en.wikipedia.org/w/api.php"
         private const val POI_LIMIT = 50
@@ -48,30 +86,64 @@ class PoiProvider @Inject constructor() {
 
 }
 
+data class Image(val title: String)
+
 data class Poi(
     @SerializedName("pageid")
     val pageId: Long,
-    val title: String,
+    @SerializedName("fullurl")
+    val wikipediaUrl: String,
+    val title: String = "",
     val lat: Double,
-    val lon: Double
+    val lon: Double,
+    val images: List<Image>?,
+    var imageUrls: List<String>?,
+    val description: String? = ""
 ) {
 
     val latLng: LatLng
         get() = LatLng(lat, lon)
 }
 
-data class Query(
-    @SerializedName("geosearch") val poiList: List<Poi>?
-)
+data class PoiListResponse(val query: QueryList?) {
 
-data class PoiListResponse(
-    val query: Query?
-) {
+    data class QueryList(@SerializedName("geosearch") val poiList: List<Poi>?)
 
     class Deserializer : ResponseDeserializable<PoiListResponse> {
         override fun deserialize(content: String): PoiListResponse? =
             Gson().fromJson(content, PoiListResponse::class.java)
     }
+
+    val poiList: List<Poi>
+        get() = query?.poiList ?: listOf()
 }
 
-class UnableToFetchPoiListException(message: String) : Exception(message)
+data class PoiDetailsResponse(val query: QueryDetails?) {
+
+    data class QueryDetails(val pages: HashMap<String, Poi>)
+
+    class Deserializer : ResponseDeserializable<PoiDetailsResponse> {
+        override fun deserialize(content: String): PoiDetailsResponse? =
+            Gson().fromJson(content, PoiDetailsResponse::class.java)
+    }
+
+    val details: Poi?
+        get() = query?.pages?.values?.firstOrNull()
+}
+
+data class ImagesUrlsResponse(val query: QueryImagesUrl?) {
+
+    data class ImageInfo(val url: String)
+    data class PoiImage(@SerializedName("imageinfo") val imageInfo: List<ImageInfo>?)
+    data class QueryImagesUrl(val pages: HashMap<String, PoiImage>)
+
+    class Deserializer : ResponseDeserializable<ImagesUrlsResponse> {
+        override fun deserialize(content: String): ImagesUrlsResponse? =
+            Gson().fromJson(content, ImagesUrlsResponse::class.java)
+    }
+
+    val urls: List<String>
+        get() = query?.pages?.values?.mapNotNull { it.imageInfo?.firstOrNull()?.url } ?: listOf()
+}
+
+class UnableToFetchPoiDataException(message: String) : Exception(message)

@@ -3,32 +3,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/bottom_sheet_bg">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottom_sheet_bg"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/swipeIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="100dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/contentLoadingIndicator"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="-1dp"
+            android:layout_marginBottom="-1dp"
+            android:indeterminate="true"
+            android:progressTint="@android:color/holo_red_dark" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/titleTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
         android:maxLines="2"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/swipeIndicator"
         tools:text="Bulevardi" />
 
     <TextView
         android:id="@+id/descriptionTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:maxLines="4"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,22 +64,57 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photoList"
         android:layout_width="0dp"
-        android:layout_height="160dp"
-        android:layout_marginStart="8dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:clipToPadding="false"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:visibility="invisible"
+        android:layoutAnimation="@anim/poi_image_entry_anim"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/descriptionTv" />
+        app:layout_constraintTop_toBottomOf="@+id/descriptionTv"
+        tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/poi_details_image_list_item"
+        tools:orientation="horizontal"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/wikipediaBtn"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/rounded_button"
+        android:text="@string/poi_details_wikipedia"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/photoList"
+        app:layout_constraintVertical_bias="1.0"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/routeBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/rounded_button"
         android:text="@string/poi_details_route"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/photoList" />
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/wikipediaBtn"
+        app:layout_constraintTop_toBottomOf="@+id/photoList"
+        app:layout_constraintVertical_bias="1.0"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

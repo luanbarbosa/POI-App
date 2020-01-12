@@ -6,9 +6,12 @@ import com.luanbarbosagomes.poiapp.dagger.DaggerMainComponent
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -28,10 +31,8 @@ class PoiViewModel @Inject constructor() : ViewModel() {
         DaggerMainComponent.create().inject(this)
     }
 
+    fun poiObservable(): Observable<List<Poi>> = poiListSubject
     fun errorObservable(): Observable<Throwable> = errorSubject
-
-    fun poiObservable(): Flowable<List<Poi>> =
-        poiListSubject.toFlowable(BackpressureStrategy.LATEST)
 
     fun fetchPoiData(location: Location) {
         poiProvider
@@ -42,4 +43,15 @@ class PoiViewModel @Inject constructor() : ViewModel() {
             }
             .addTo(disposeBag)
     }
+
+    fun poiDetailsObservable(poi: Poi): Single<Poi?> =
+        poiProvider
+            .fetchPoiDetails(poi.pageId)
+            .flatMap { poiDetails ->
+                poiProvider
+                    .fetchImagesUrl(poiDetails.images?.map { it.title } ?: listOf())
+                    .onErrorReturn { null }
+                    .map { urls -> poiDetails.apply { imageUrls = urls } }
+            }
+            .subscribeOn(Schedulers.io())
 }

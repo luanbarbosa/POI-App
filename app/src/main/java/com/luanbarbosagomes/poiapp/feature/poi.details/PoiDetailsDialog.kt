@@ -85,14 +85,17 @@ class PoiDetailsDialog(
 
     private fun loadImages(urls: List<String>) {
         photoList.apply {
-            adapter = PoiImagesAdapter(urls)
+            adapter = PoiImagesAdapter(urls) { clickedImg ->
+                BrowserUtils.openOnTab(context, clickedImg)
+            }
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         }
     }
 }
 
 class PoiImagesAdapter(
-    private val images: List<String>
+    private val images: List<String>,
+    private val clickListener: (String) -> Unit
 ) : RecyclerView.Adapter<PoiImagesAdapter.PoiImageHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PoiImageHolder =
@@ -101,7 +104,8 @@ class PoiImagesAdapter(
                 R.layout.poi_details_image_list_item,
                 parent,
                 false
-            )
+            ),
+            clickListener
         )
 
     override fun getItemCount(): Int = images.size
@@ -109,7 +113,10 @@ class PoiImagesAdapter(
     override fun onBindViewHolder(holder: PoiImageHolder, position: Int) =
         holder.bind(url = images[position])
 
-    class PoiImageHolder(rootView: View) : RecyclerView.ViewHolder(rootView) {
+    class PoiImageHolder(
+        rootView: View,
+        val clickListener: (String) -> Unit
+    ) : RecyclerView.ViewHolder(rootView) {
 
         private var imageView: ImageView = rootView.findViewById(R.id.poiImage)
 
@@ -119,6 +126,7 @@ class PoiImagesAdapter(
                 .load(url)
                 .centerCrop()
                 .into(imageView)
+            imageView.setOnClickListener { clickListener(url) }
         }
     }
 }

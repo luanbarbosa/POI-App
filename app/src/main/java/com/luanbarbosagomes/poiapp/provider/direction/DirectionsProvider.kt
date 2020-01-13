@@ -28,6 +28,7 @@ class DirectionsProvider @Inject constructor() {
         "https://maps.googleapis.com/maps/api/directions/json?" +
             "origin=${origin.formatted()}" +
             "&destination=${destination.formatted()}" +
+            "&mode=walking" +
             "&key=AIzaSyAS37i53WSJR3JNqA7BkxdvNXjz2TTzJ0A"
 
 }

@@ -3,10 +3,11 @@ package com.luanbarbosagomes.poiapp.provider.location
 import android.location.Location
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
-import com.luanbarbosagomes.poiapp.dagger.DaggerMainComponent
+import com.luanbarbosagomes.poiapp.App
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
+import javax.inject.Singleton
 
 val Location.latLong: LatLng
     get() = LatLng(latitude, longitude)
@@ -14,6 +15,7 @@ val Location.latLong: LatLng
 /**
  * [ViewModel] responsible for operations related to location, such as location update handling.
  */
+@Singleton
 class LocationViewModel @Inject constructor() : ViewModel() {
 
     @Inject
@@ -21,10 +23,10 @@ class LocationViewModel @Inject constructor() : ViewModel() {
 
     private val locationSubject: PublishSubject<Location?> = PublishSubject.create()
 
-    private var lastLocation: Location? = null
+    var lastLocation: Location? = null
 
     init {
-        DaggerMainComponent.create().inject(this)
+        App.daggerMainComponent.inject(this)
     }
 
     fun locationObservable(): Observable<Location?> =

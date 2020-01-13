@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">POI App</string>
-    <string name="title_activity_maps">Map</string>
     <string name="poi_details_route">Route</string>
     <string name="poi_details_no_images">No images.</string>
     <string name="poi_details_wikipedia">Wikipedia</string>

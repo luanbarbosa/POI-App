@@ -3,7 +3,6 @@ package com.luanbarbosagomes.poiapp.feature.main
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -16,8 +15,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
-import com.luanbarbosagomes.poiapp.dagger.DaggerMainComponent
 import com.luanbarbosagomes.poiapp.feature.poi.details.PoiDetailsDialog
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
 import com.luanbarbosagomes.poiapp.provider.location.latLong
@@ -27,7 +26,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private val disposeBag = CompositeDisposable()
 
@@ -44,7 +43,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         ) == PERMISSION_GRANTED
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        DaggerMainComponent.create().inject(this)
+        App.daggerMainComponent.inject(this)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
@@ -67,8 +66,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMapReady(gMap: GoogleMap) {
         googleMap = gMap
         googleMap?.apply {
-            setMapStyle(MapStyleOptions.loadRawResourceStyle(this@MainActivity, R.raw.google_maps_style))
-            setOnMarkerClickListener(this@MainActivity)
+            setMapStyle(MapStyleOptions.loadRawResourceStyle(this@ActivityMain, R.raw.google_maps_style))
+            setOnMarkerClickListener(this@ActivityMain)
         }
 
         if (hasLocationPermission) {
@@ -80,7 +79,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         marker?.apply {
             setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             PoiDetailsDialog(
-                this@MainActivity,
+                this@ActivityMain,
                 marker.tag as Poi
             ).show()
         }

@@ -1,8 +1,11 @@
 package com.luanbarbosagomes.poiapp.feature.navigation
 
+import android.content.Intent
 import android.graphics.Color
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -14,19 +17,23 @@ import com.google.gson.Gson
 import com.google.maps.android.PolyUtil
 import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
-import com.luanbarbosagomes.poiapp.provider.direction.DirectionsResponse
+import com.luanbarbosagomes.poiapp.provider.navigation.DirectionsResponse
+import com.luanbarbosagomes.poiapp.provider.navigation.formatted
 import com.luanbarbosagomes.poiapp.provider.location.latLong
-import com.luanbarbosagomes.poiapp.provider.poi.DirectionsViewModel
 import com.luanbarbosagomes.poiapp.provider.poi.Poi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.activity_navigation.*
 import javax.inject.Inject
 
+/**
+ * Screen responsible for showing the UI with the directions to a specific location.
+ */
 class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
 
     @Inject
-    internal lateinit var directionsViewModel: DirectionsViewModel
+    internal lateinit var navigationViewModel: NavigationViewModel
 
     private val disposeBag = CompositeDisposable()
     private var googleMap: GoogleMap? = null
@@ -62,11 +69,14 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
             uiSettings.apply {
                 isMapToolbarEnabled = false
                 isMyLocationButtonEnabled = false
-                isZoomControlsEnabled = true
             }
         }
 
-        directionsViewModel
+        loadDirections()
+    }
+
+    private fun loadDirections() {
+        navigationViewModel
             .getDirections(currentLocation.latLong, poi.latLng)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { navigationData, error ->
@@ -85,7 +95,6 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
                 .title(getString(R.string.poi_navigation_you))
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
         )?.showInfoWindow()
-
         googleMap?.addMarker(
             MarkerOptions()
                 .position(route.legs.last().endLocation.toLatLng())
@@ -93,14 +102,32 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
         )
 
-        val pointsList = PolyUtil.decode(route.overviewPolyline.points)
         googleMap?.addPolyline(
             PolylineOptions()
-                .addAll(pointsList)
+                .addAll(PolyUtil.decode(route.overviewPolyline.points))
                 .color(Color.WHITE)
         )
         googleMap?.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(route.bounds.latLngBounds().center, 15.5f)
+            CameraUpdateFactory.newLatLngZoom(route.bounds.latLngBounds().center, 16.5f)
+        )
+
+        setupViews()
+    }
+
+    private fun setupViews() {
+        seeDetailBtn.apply {
+            visibility = View.VISIBLE
+            setOnClickListener { NavigationDetailsDialog(this@ActivityNavigation).show() }
+        }
+        navigateBtn.apply {
+            visibility = View.VISIBLE
+            setOnClickListener { startGoogleMapsNavigation() }
+        }
+    }
+
+    private fun startGoogleMapsNavigation() {
+        startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=${poi.latLng.formatted()}"))
         )
     }
 

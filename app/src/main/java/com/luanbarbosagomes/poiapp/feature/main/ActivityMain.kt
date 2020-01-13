@@ -78,10 +78,7 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMarkerClick(marker: Marker?): Boolean {
         marker?.apply {
             setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-            PoiDetailsDialog(
-                this@ActivityMain,
-                marker.tag as Poi
-            ).show()
+            PoiDetailsDialog(this@ActivityMain, marker.tag as Poi).show()
         }
         return false
     }
@@ -114,7 +111,6 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             uiSettings.apply {
                 isMyLocationButtonEnabled = true
                 isMapToolbarEnabled = false
-                isZoomControlsEnabled = true
             }
         }
 

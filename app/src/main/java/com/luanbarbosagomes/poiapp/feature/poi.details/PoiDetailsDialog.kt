@@ -22,7 +22,7 @@ import com.luanbarbosagomes.poiapp.utils.BrowserUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.bottom_sheet_poi_details.*
+import kotlinx.android.synthetic.main.bottom_sheet_details_poi.*
 import javax.inject.Inject
 
 class PoiDetailsDialog(
@@ -48,7 +48,7 @@ class PoiDetailsDialog(
     }
 
     override fun show() {
-        val view = View.inflate(context, R.layout.bottom_sheet_poi_details, null)
+        val view = View.inflate(context, R.layout.bottom_sheet_details_poi, null)
         setContentView(view)
         BottomSheetBehavior.from(view.parent as View).peekHeight = 600
 

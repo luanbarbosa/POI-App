@@ -1,4 +1,4 @@
-package com.luanbarbosagomes.poiapp.provider.direction
+package com.luanbarbosagomes.poiapp.provider.navigation
 
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.Gson

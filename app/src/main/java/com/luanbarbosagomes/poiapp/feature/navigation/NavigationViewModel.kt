@@ -1,14 +1,14 @@
-package com.luanbarbosagomes.poiapp.provider.poi
+package com.luanbarbosagomes.poiapp.feature.navigation
 
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.luanbarbosagomes.poiapp.App
-import com.luanbarbosagomes.poiapp.provider.direction.DirectionsProvider
-import com.luanbarbosagomes.poiapp.provider.direction.DirectionsResponse
+import com.luanbarbosagomes.poiapp.provider.navigation.DirectionsProvider
+import com.luanbarbosagomes.poiapp.provider.navigation.DirectionsResponse
 import io.reactivex.Single
 import javax.inject.Inject
 
-class DirectionsViewModel @Inject constructor() : ViewModel() {
+class NavigationViewModel @Inject constructor() : ViewModel() {
 
     @Inject
     internal lateinit var directionsProvider: DirectionsProvider

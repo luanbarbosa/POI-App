@@ -5,4 +5,6 @@
     <string name="poi_details_wikipedia">Wikipedia</string>
     <string name="poi_navigation_load_error">Unable to load navigation for this POI</string>
     <string name="poi_navigation_you">You</string>
+    <string name="poi_navigation_details">Details</string>
+    <string name="poi_navigation_google_maps">Navigate</string>
 </resources>

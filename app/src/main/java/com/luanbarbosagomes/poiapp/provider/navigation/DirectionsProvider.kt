@@ -1,4 +1,4 @@
-package com.luanbarbosagomes.poiapp.provider.direction
+package com.luanbarbosagomes.poiapp.provider.navigation
 
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.rx.rxObject
@@ -29,11 +29,12 @@ class DirectionsProvider @Inject constructor() {
             "origin=${origin.formatted()}" +
             "&destination=${destination.formatted()}" +
             "&mode=walking" +
+            "&units=metric" +
             "&key=AIzaSyAS37i53WSJR3JNqA7BkxdvNXjz2TTzJ0A"
 
 }
 
-private fun LatLng.formatted(): String = "$latitude,$longitude"
+fun LatLng.formatted(): String = "$latitude,$longitude"
 
 class UnableToFetchDirectionsException(
     message: String = "Unable to retrieve directions!"

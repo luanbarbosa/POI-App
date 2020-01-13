@@ -3,10 +3,10 @@ package com.luanbarbosagomes.poiapp.dagger
 import com.luanbarbosagomes.poiapp.feature.main.ActivityMain
 import com.luanbarbosagomes.poiapp.feature.navigation.ActivityNavigation
 import com.luanbarbosagomes.poiapp.feature.poi.details.PoiDetailsDialog
-import com.luanbarbosagomes.poiapp.provider.direction.DirectionsProvider
+import com.luanbarbosagomes.poiapp.provider.navigation.DirectionsProvider
 import com.luanbarbosagomes.poiapp.provider.location.LocationProvider
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
-import com.luanbarbosagomes.poiapp.provider.poi.DirectionsViewModel
+import com.luanbarbosagomes.poiapp.feature.navigation.NavigationViewModel
 import com.luanbarbosagomes.poiapp.provider.poi.PoiProvider
 import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
 import dagger.Component
@@ -22,7 +22,7 @@ interface MainComponent {
 
     fun inject(poiViewModel: PoiViewModel)
     fun inject(locationViewModel: LocationViewModel)
-    fun inject(directionsViewModel: DirectionsViewModel)
+    fun inject(navigationViewModel: NavigationViewModel)
 
     fun inject(activityMain: ActivityMain)
     fun inject(activityNavigation: ActivityNavigation)

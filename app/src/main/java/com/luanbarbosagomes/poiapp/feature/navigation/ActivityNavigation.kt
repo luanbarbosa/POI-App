@@ -111,13 +111,15 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
             CameraUpdateFactory.newLatLngZoom(route.bounds.latLngBounds().center, 16.5f)
         )
 
-        setupViews()
+        setupViews(route)
     }
 
-    private fun setupViews() {
+    private fun setupViews(route: DirectionsResponse.Routes) {
         seeDetailBtn.apply {
             visibility = View.VISIBLE
-            setOnClickListener { NavigationDetailsDialog(this@ActivityNavigation).show() }
+            setOnClickListener {
+                NavigationDetailsDialog(this@ActivityNavigation, poi, route).show()
+            }
         }
         navigateBtn.apply {
             visibility = View.VISIBLE

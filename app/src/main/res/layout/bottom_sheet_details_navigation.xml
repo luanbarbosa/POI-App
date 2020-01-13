@@ -7,6 +7,22 @@
     android:background="@drawable/bottom_sheet_bg"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/titleTv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:maxLines="2"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/swipeIndicator"
+        tools:text="Bulevardi" />
+
     <View
         android:id="@+id/swipeIndicator"
         android:layout_width="match_parent"
@@ -20,21 +36,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/photoList"
+        android:id="@+id/stepList"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:clipToPadding="false"
         android:layoutAnimation="@anim/poi_image_entry_anim"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/swipeIndicator"
+        app:layout_constraintTop_toBottomOf="@+id/titleTv"
         tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/poi_details_image_list_item"
-        tools:orientation="horizontal"
-        tools:visibility="visible" />
+        tools:orientation="horizontal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

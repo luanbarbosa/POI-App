@@ -17,7 +17,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
-import com.luanbarbosagomes.poiapp.feature.poi.details.PoiDetailsDialog
+import com.luanbarbosagomes.poiapp.feature.main.details.PoiDetailsDialog
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
 import com.luanbarbosagomes.poiapp.provider.location.latLong
 import com.luanbarbosagomes.poiapp.provider.poi.Poi
@@ -78,7 +78,10 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMarkerClick(marker: Marker?): Boolean {
         marker?.apply {
             setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-            PoiDetailsDialog(this@ActivityMain, marker.tag as Poi).show()
+            PoiDetailsDialog(
+                this@ActivityMain,
+                marker.tag as Poi
+            ).show()
         }
         return false
     }

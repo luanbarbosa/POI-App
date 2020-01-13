@@ -1,4 +1,4 @@
-package com.luanbarbosagomes.poiapp.feature.poi.details
+package com.luanbarbosagomes.poiapp.feature.main.details
 
 import android.content.Context
 import android.content.Intent
@@ -92,9 +92,12 @@ class PoiDetailsDialog(
 
     private fun loadImages(urls: List<String>) {
         photoList.apply {
-            adapter = PoiImagesAdapter(urls) { clickedImg ->
-                BrowserUtils.openOnTab(context, clickedImg)
-            }
+            adapter =
+                PoiImagesAdapter(
+                    urls
+                ) { clickedImg ->
+                    BrowserUtils.openOnTab(context, clickedImg)
+                }
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         }
     }

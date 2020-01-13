@@ -22,7 +22,7 @@ data class DirectionsResponse(val routes: List<Routes>) {
     data class Legs (
         val distance : TextValue,
         val duration : TextValue,
-        val steps : List<Steps>,
+        val steps : List<Step>,
         @SerializedName("end_address") val endAddress : String,
         @SerializedName("end_location") val endLocation : LatLong,
         @SerializedName("start_address") val startAddress : String,
@@ -31,17 +31,21 @@ data class DirectionsResponse(val routes: List<Routes>) {
         @SerializedName("via_waypoint") val viaWaypoint : List<String>
     )
 
-    data class Steps (
-        val distance : TextValue,
-        val duration : TextValue,
-        val polyline : Polyline,
-        @SerializedName("end_location") val endLocation : LatLong,
-        @SerializedName("html_instructions") val htmlInstructions : String,
-        @SerializedName("start_location") val startLocation : LatLong,
-        @SerializedName("travel_mode") val travelMode : String
+    open class Step (
+        val distance : TextValue = TextValue.empty(),
+        val duration : TextValue = TextValue.empty(),
+        val polyline : Polyline = Polyline(),
+        @SerializedName("end_location") val endLocation : LatLong = LatLong(),
+        @SerializedName("html_instructions") val htmlInstructions : String = "",
+        @SerializedName("start_location") val startLocation : LatLong = LatLong(),
+        @SerializedName("travel_mode") val travelMode : String = ""
     )
 
-    data class Polyline (val points : String)
-    data class LatLong (val lat : Double, val lng : Double)
-    data class TextValue (val text : String, val value : Int)
+    data class Polyline (val points : String = "")
+    data class LatLong (val lat : Double = 0.0, val lng : Double = 0.0)
+    data class TextValue (val text : String, val value : Int) {
+        companion object {
+            fun empty() = TextValue("", 0)
+        }
+    }
 }

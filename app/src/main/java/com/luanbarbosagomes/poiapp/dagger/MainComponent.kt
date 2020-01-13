@@ -2,7 +2,7 @@ package com.luanbarbosagomes.poiapp.dagger
 
 import com.luanbarbosagomes.poiapp.feature.main.ActivityMain
 import com.luanbarbosagomes.poiapp.feature.navigation.ActivityNavigation
-import com.luanbarbosagomes.poiapp.feature.poi.details.PoiDetailsDialog
+import com.luanbarbosagomes.poiapp.feature.main.details.PoiDetailsDialog
 import com.luanbarbosagomes.poiapp.provider.navigation.DirectionsProvider
 import com.luanbarbosagomes.poiapp.provider.location.LocationProvider
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel

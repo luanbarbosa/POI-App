@@ -46,7 +46,7 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         App.daggerMainComponent.inject(this)
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
+        setContentView(R.layout.activity_main)
 
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
         requestLocationPermission()

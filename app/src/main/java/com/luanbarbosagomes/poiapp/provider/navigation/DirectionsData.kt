@@ -33,12 +33,7 @@ data class DirectionsResponse(val routes: List<Routes>) {
 
     open class Step (
         val distance : TextValue = TextValue.empty(),
-        val duration : TextValue = TextValue.empty(),
-        val polyline : Polyline = Polyline(),
-        @SerializedName("end_location") val endLocation : LatLong = LatLong(),
-        @SerializedName("html_instructions") val htmlInstructions : String = "",
-        @SerializedName("start_location") val startLocation : LatLong = LatLong(),
-        @SerializedName("travel_mode") val travelMode : String = ""
+        @SerializedName("html_instructions") val htmlInstructions : String = ""
     )
 
     data class Polyline (val points : String = "")

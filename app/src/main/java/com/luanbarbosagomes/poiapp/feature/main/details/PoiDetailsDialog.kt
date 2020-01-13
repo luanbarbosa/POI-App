@@ -1,6 +1,7 @@
-package com.luanbarbosagomes.poiapp.feature.poi.details
+package com.luanbarbosagomes.poiapp.feature.main.details
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,15 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
+import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
-import com.luanbarbosagomes.poiapp.dagger.DaggerMainComponent
+import com.luanbarbosagomes.poiapp.feature.navigation.ActivityNavigation
+import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
 import com.luanbarbosagomes.poiapp.provider.poi.Poi
 import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
 import com.luanbarbosagomes.poiapp.utils.BrowserUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.bottom_sheet_poi_details.*
+import kotlinx.android.synthetic.main.bottom_sheet_details_poi.*
 import javax.inject.Inject
 
 class PoiDetailsDialog(
@@ -27,11 +31,14 @@ class PoiDetailsDialog(
 ) : BottomSheetDialog(context, R.style.BottomSheetStyle) {
 
     init {
-        DaggerMainComponent.create().inject(this)
+        App.daggerMainComponent.inject(this)
     }
 
     @Inject
     lateinit var poiViewModel: PoiViewModel
+
+    @Inject
+    lateinit var locationViewModel: LocationViewModel
 
     private val disposeBag = CompositeDisposable()
 
@@ -41,7 +48,7 @@ class PoiDetailsDialog(
     }
 
     override fun show() {
-        val view = View.inflate(context, R.layout.bottom_sheet_poi_details, null)
+        val view = View.inflate(context, R.layout.bottom_sheet_details_poi, null)
         setContentView(view)
         BottomSheetBehavior.from(view.parent as View).peekHeight = 600
 
@@ -73,7 +80,7 @@ class PoiDetailsDialog(
             titleTv.text = title
             descriptionTv.text = description
             wikipediaBtn.setOnClickListener { BrowserUtils.openOnTab(context, wikipediaUrl) }
-            routeBtn.setOnClickListener { }
+            routeBtn.setOnClickListener { showNavigationScreen() }
         }
     }
 
@@ -85,11 +92,29 @@ class PoiDetailsDialog(
 
     private fun loadImages(urls: List<String>) {
         photoList.apply {
-            adapter = PoiImagesAdapter(urls) { clickedImg ->
-                BrowserUtils.openOnTab(context, clickedImg)
-            }
+            adapter =
+                PoiImagesAdapter(
+                    urls
+                ) { clickedImg ->
+                    BrowserUtils.openOnTab(context, clickedImg)
+                }
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         }
+    }
+
+    private fun showNavigationScreen() {
+        context.startActivity(
+            Intent(context, ActivityNavigation::class.java).apply {
+                putExtra(
+                    ActivityNavigation.CURRENT_LOCATION,
+                    locationViewModel.lastLocation
+                )
+                putExtra(
+                    ActivityNavigation.POI,
+                    Gson().toJson(poi)
+                )
+            }
+        )
     }
 }
 

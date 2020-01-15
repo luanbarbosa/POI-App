@@ -1,8 +1,8 @@
 package com.luanbarbosagomes.poiapp.provider.poi
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import com.luanbarbosagomes.poiapp.App
+import com.luanbarbosagomes.poiapp.provider.location.Location
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -15,18 +15,13 @@ import javax.inject.Inject
  * [ViewModel] responsible for operations related to Points of Interest (POI), such as POI list
  * request based on location and POI details.
  */
-class PoiViewModel @Inject constructor() : ViewModel() {
-
-    @Inject
-    lateinit var poiProvider: PoiProvider
+class PoiViewModel @Inject constructor(
+    var poiProvider: PoiProvider
+) : ViewModel() {
 
     private val disposeBag = CompositeDisposable()
     private val poiListSubject: PublishSubject<List<Poi>> = PublishSubject.create()
     private val errorSubject: PublishSubject<Throwable> = PublishSubject.create()
-
-    init {
-        App.daggerMainComponent.inject(this)
-    }
 
     fun poiObservable(): Observable<List<Poi>> = poiListSubject
     fun errorObservable(): Observable<Throwable> = errorSubject

@@ -8,14 +8,9 @@ import com.luanbarbosagomes.poiapp.provider.navigation.DirectionsResponse
 import io.reactivex.Single
 import javax.inject.Inject
 
-class NavigationViewModel @Inject constructor() : ViewModel() {
-
-    @Inject
-    internal lateinit var directionsProvider: DirectionsProvider
-
-    init {
-        App.daggerMainComponent.inject(this)
-    }
+class NavigationViewModel @Inject constructor(
+    var directionsProvider: DirectionsProvider
+) : ViewModel() {
 
     fun getDirections(origin: LatLng, destination: LatLng): Single<DirectionsResponse?> =
         directionsProvider.fetchDirections(origin, destination)

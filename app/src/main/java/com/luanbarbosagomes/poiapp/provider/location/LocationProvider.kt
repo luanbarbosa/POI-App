@@ -1,18 +1,31 @@
 package com.luanbarbosagomes.poiapp.provider.location
 
-import android.location.Location
+import android.location.Location as SysLocation
 import android.os.Looper
+import android.os.Parcelable
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.luanbarbosagomes.poiapp.App
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.ObservableEmitter
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.parcel.Parcelize
 import javax.inject.Inject
 import javax.inject.Singleton
+
+@Parcelize
+data class Location(val lat: Double, val long: Double): Parcelable {
+
+    val latLong: LatLng
+        get() = LatLng(lat, long)
+
+}
+
+fun SysLocation.toLocation() = Location(latitude, longitude)
 
 /**
  * Provider responsible for retrieving location data using [LocationServices] given a set of params.
@@ -43,7 +56,7 @@ class LocationProvider @Inject constructor() {
                 object : LocationCallback() {
                     override fun onLocationResult(result: LocationResult?) {
                         result?.lastLocation?.let {
-                            emitter.onNext(it)
+                            emitter.onNext(it.toLocation())
                         }
                     }
                 },

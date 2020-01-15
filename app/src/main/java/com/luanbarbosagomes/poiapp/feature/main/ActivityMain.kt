@@ -1,7 +1,6 @@
 package com.luanbarbosagomes.poiapp.feature.main
 
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,8 +14,8 @@ import com.google.android.gms.maps.model.*
 import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
 import com.luanbarbosagomes.poiapp.feature.main.details.PoiDetailsDialog
+import com.luanbarbosagomes.poiapp.provider.location.Location
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
-import com.luanbarbosagomes.poiapp.provider.location.latLong
 import com.luanbarbosagomes.poiapp.provider.poi.Poi
 import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
 import io.reactivex.disposables.CompositeDisposable

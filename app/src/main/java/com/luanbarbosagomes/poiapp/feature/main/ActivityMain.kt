@@ -125,14 +125,14 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private fun setupPoiDataUpdate() {
         poiViewModel
-            .poiObservable()
+            .poiListSubject
             .subscribe { poiList ->
                 addPoiToMap(poiList)
             }
             .addTo(disposeBag)
 
         poiViewModel
-            .errorObservable()
+            .errorSubject
             .subscribe { error ->
                 Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
             }

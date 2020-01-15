@@ -15,8 +15,8 @@ object LocationUtils {
 
 object PoiUtils {
 
-    val Poi1 = Poi(1, "", "Poi 1", 0.0, 0.0, null, null)
-    val Poi1WithDetails = Poi(
+    val poi1 = Poi(1, "", "Poi 1", 0.0, 0.0, null, null)
+    val poi1WithDetails = Poi(
         1,
         "wikiPoi1",
         "Poi 1",
@@ -25,7 +25,7 @@ object PoiUtils {
         listOf(Image("img1"), Image("img2")),
         null,
         "Poi 1 desc")
-    val Poi1Complete = Poi(
+    val poi1Complete = Poi(
         1,
         "wikiPoi1",
         "Poi 1",
@@ -34,4 +34,24 @@ object PoiUtils {
         listOf(Image("img1"), Image("img2")),
         listOf("www.img1", "www.img2"),
         "Poi 1 desc")
+
+    val poi2 = Poi(2, "", "Poi 2", 0.0, 0.0, null, null)
+    val poi2WithDetails = Poi(
+        1,
+        "wikiPoi2",
+        "Poi 2",
+        0.0,
+        0.0,
+        listOf(Image("img1"), Image("img2")),
+        null,
+        "Poi 2 desc")
+    val poi2Complete = Poi(
+        1,
+        "wikiPoi2",
+        "Poi 2",
+        0.0,
+        0.0,
+        listOf(Image("img1"), Image("img2")),
+        listOf("www.img1", "www.img2"),
+        "Poi 2 desc")
 }

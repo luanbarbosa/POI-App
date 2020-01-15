@@ -7,8 +7,8 @@ import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
 import io.mockk.every
 import io.mockk.mockk
 import io.reactivex.Flowable
-import org.junit.Assert.*
-import org.junit.Before
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class LocationViewModelTest {
@@ -16,10 +16,6 @@ class LocationViewModelTest {
     private val locationProvider: LocationProvider = mockk()
 
     private val sut = LocationViewModel(locationProvider)
-
-    @Before
-    fun before() {
-    }
 
     @Test
     fun `New location is delivered to observer`() {

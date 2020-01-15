@@ -117,10 +117,8 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         locationViewModel
             .locationObservable()
             .subscribe { currentLocation ->
-                currentLocation?.let {
-                    moveToLocation(it)
-                    poiViewModel.fetchPoiData(it)
-                }
+                moveToLocation(currentLocation)
+                poiViewModel.fetchPoiData(currentLocation)
             }
             .addTo(disposeBag)
     }

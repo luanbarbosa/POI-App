@@ -1,8 +1,6 @@
 package com.luanbarbosagomes.poiapp.provider.poi
 
 import androidx.lifecycle.ViewModel
-import com.luanbarbosagomes.poiapp.App
-import com.luanbarbosagomes.poiapp.provider.location.Location
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -26,7 +24,7 @@ class PoiViewModel @Inject constructor(
     fun poiObservable(): Observable<List<Poi>> = poiListSubject
     fun errorObservable(): Observable<Throwable> = errorSubject
 
-    fun fetchPoiData(location: Location) {
+    fun fetchPoiData(location: com.luanbarbosagomes.poiapp.provider.location.Location) {
         poiProvider
             .fetchPoiList(location)
             .subscribe { poiList, error ->

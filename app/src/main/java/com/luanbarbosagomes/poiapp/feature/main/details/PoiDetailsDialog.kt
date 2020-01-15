@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -62,8 +63,14 @@ class PoiDetailsDialog(
         poiViewModel
             .poiDetailsObservable(poi)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { poiDetails ->
-                poiDetails?.let { updateUi(it, fullLoad = true) }
+            .subscribe { poiDetails, error ->
+                when (error) {
+                    null -> updateUi(poiDetails, fullLoad = true)
+                    else -> {
+                        Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+                        dismiss()
+                    }
+                }
             }
             .addTo(disposeBag)
 

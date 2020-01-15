@@ -1,8 +1,8 @@
 package com.luanbarbosagomes.poiapp.provider.poi
 
-import android.location.Location
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.rx.rxObject
+import com.luanbarbosagomes.poiapp.provider.location.Location
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -54,7 +54,7 @@ class PoiProvider @Inject constructor() {
             "?action=query" +
             "&list=geosearch" +
             "&gsradius=$RADIUS" +
-            "&gscoord=${location.latitude}|${location.longitude}" +
+            "&gscoord=${location.lat}|${location.long}" +
             "&gslimit=$POI_LIMIT" +
             "&format=json"
 

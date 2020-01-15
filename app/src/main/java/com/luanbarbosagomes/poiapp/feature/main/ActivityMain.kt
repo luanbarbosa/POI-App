@@ -1,7 +1,6 @@
 package com.luanbarbosagomes.poiapp.feature.main
 
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,8 +14,8 @@ import com.google.android.gms.maps.model.*
 import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
 import com.luanbarbosagomes.poiapp.feature.main.details.PoiDetailsDialog
+import com.luanbarbosagomes.poiapp.provider.location.Location
 import com.luanbarbosagomes.poiapp.provider.location.LocationViewModel
-import com.luanbarbosagomes.poiapp.provider.location.latLong
 import com.luanbarbosagomes.poiapp.provider.poi.Poi
 import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -63,7 +62,12 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMapReady(gMap: GoogleMap) {
         googleMap = gMap
         googleMap?.apply {
-            setMapStyle(MapStyleOptions.loadRawResourceStyle(this@ActivityMain, R.raw.google_maps_style))
+            setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this@ActivityMain,
+                    R.raw.google_maps_style
+                )
+            )
             setOnMarkerClickListener(this@ActivityMain)
             centerOnHelsinki()
         }
@@ -118,24 +122,22 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         locationViewModel
             .locationObservable()
             .subscribe { currentLocation ->
-                currentLocation?.let {
-                    moveToLocation(it)
-                    poiViewModel.fetchPoiData(it)
-                }
+                moveToLocation(currentLocation)
+                poiViewModel.fetchPoiData(currentLocation)
             }
             .addTo(disposeBag)
     }
 
     private fun setupPoiDataUpdate() {
         poiViewModel
-            .poiObservable()
+            .poiListSubject
             .subscribe { poiList ->
                 addPoiToMap(poiList)
             }
             .addTo(disposeBag)
 
         poiViewModel
-            .errorObservable()
+            .errorSubject
             .subscribe { error ->
                 Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
             }
@@ -154,15 +156,6 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    private fun centerOnHelsinki() {
-        googleMap?.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(60.169857, 24.938379),
-                10f
-            )
-        )
-    }
-
     private fun moveToLocation(location: Location) {
         googleMap?.animateCamera(
             CameraUpdateFactory.newLatLngZoom(location.latLong, CURRENT_LOCATION_ZOOM)
@@ -175,3 +168,10 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
 }
+
+fun GoogleMap.centerOnHelsinki() = moveCamera(
+    CameraUpdateFactory.newLatLngZoom(
+        LatLng(60.169857, 24.938379),
+        10f
+    )
+)

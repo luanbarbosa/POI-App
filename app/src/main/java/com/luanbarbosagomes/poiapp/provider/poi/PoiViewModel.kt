@@ -1,9 +1,7 @@
 package com.luanbarbosagomes.poiapp.provider.poi
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
-import com.luanbarbosagomes.poiapp.App
-import io.reactivex.Observable
+import com.luanbarbosagomes.poiapp.provider.location.Location
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -15,40 +13,31 @@ import javax.inject.Inject
  * [ViewModel] responsible for operations related to Points of Interest (POI), such as POI list
  * request based on location and POI details.
  */
-class PoiViewModel @Inject constructor() : ViewModel() {
-
-    @Inject
-    lateinit var poiProvider: PoiProvider
+class PoiViewModel @Inject constructor(
+    var poiProvider: PoiProvider
+) : ViewModel() {
 
     private val disposeBag = CompositeDisposable()
-    private val poiListSubject: PublishSubject<List<Poi>> = PublishSubject.create()
-    private val errorSubject: PublishSubject<Throwable> = PublishSubject.create()
-
-    init {
-        App.daggerMainComponent.inject(this)
-    }
-
-    fun poiObservable(): Observable<List<Poi>> = poiListSubject
-    fun errorObservable(): Observable<Throwable> = errorSubject
+    val poiListSubject: PublishSubject<List<Poi>> = PublishSubject.create()
+    val errorSubject: PublishSubject<Throwable> = PublishSubject.create()
 
     fun fetchPoiData(location: Location) {
         poiProvider
             .fetchPoiList(location)
             .subscribe { poiList, error ->
                 poiList?.let { poiListSubject.onNext(it) }
-                error?.let { errorSubject.onNext(error) }
+                error?.let { errorSubject.onError(error) }
             }
             .addTo(disposeBag)
     }
 
-    fun poiDetailsObservable(poi: Poi): Single<Poi?> =
+    fun poiDetailsObservable(poi: Poi): Single<Poi> =
         poiProvider
             .fetchPoiDetails(poi.pageId)
             .flatMap { poiDetails ->
                 poiProvider
                     .fetchImagesUrl(poiDetails.images?.map { it.title } ?: listOf())
-                    .onErrorReturn { null }
+                    .onErrorReturn { listOf() }
                     .map { urls -> poiDetails.apply { imageUrls = urls } }
             }
-            .subscribeOn(Schedulers.io())
 }

@@ -2,7 +2,6 @@ package com.luanbarbosagomes.poiapp.feature.navigation
 
 import android.content.Intent
 import android.graphics.Color
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -17,9 +16,10 @@ import com.google.gson.Gson
 import com.google.maps.android.PolyUtil
 import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
+import com.luanbarbosagomes.poiapp.feature.main.centerOnHelsinki
+import com.luanbarbosagomes.poiapp.provider.location.Location
 import com.luanbarbosagomes.poiapp.provider.navigation.DirectionsResponse
 import com.luanbarbosagomes.poiapp.provider.navigation.formatted
-import com.luanbarbosagomes.poiapp.provider.location.latLong
 import com.luanbarbosagomes.poiapp.provider.poi.Poi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -52,7 +52,7 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
 
     private fun readIntentData() {
         currentLocation =
-            intent.getParcelableExtra(CURRENT_LOCATION) ?: Location("").also { closeDueToError() }
+            intent.getParcelableExtra(CURRENT_LOCATION) ?: Location(0.0, 0.0).also { closeDueToError() }
         poi = Gson().fromJson(intent.getStringExtra(POI), Poi::class.java)
     }
 
@@ -71,6 +71,7 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
                 isMapToolbarEnabled = false
                 isMyLocationButtonEnabled = false
             }
+            centerOnHelsinki()
         }
 
         loadDirections()

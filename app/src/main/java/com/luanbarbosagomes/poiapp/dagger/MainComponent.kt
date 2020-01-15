@@ -20,10 +20,6 @@ interface MainComponent {
     fun getLocationProvider(): LocationProvider
     fun getDirectionsProvider(): DirectionsProvider
 
-    fun inject(poiViewModel: PoiViewModel)
-    fun inject(locationViewModel: LocationViewModel)
-    fun inject(navigationViewModel: NavigationViewModel)
-
     fun inject(activityMain: ActivityMain)
     fun inject(activityNavigation: ActivityNavigation)
     fun inject(poiDetailsDialog: PoiDetailsDialog)

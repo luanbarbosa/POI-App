@@ -11,10 +11,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
 import com.luanbarbosagomes.poiapp.feature.main.details.PoiDetailsDialog
@@ -68,6 +65,7 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         googleMap?.apply {
             setMapStyle(MapStyleOptions.loadRawResourceStyle(this@ActivityMain, R.raw.google_maps_style))
             setOnMarkerClickListener(this@ActivityMain)
+            centerOnHelsinki()
         }
 
         if (hasLocationPermission) {
@@ -154,6 +152,15 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
             )?.tag = it
         }
+    }
+
+    private fun centerOnHelsinki() {
+        googleMap?.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(60.169857, 24.938379),
+                10f
+            )
+        )
     }
 
     private fun moveToLocation(location: Location) {

@@ -65,6 +65,7 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
                     R.raw.google_maps_style
                 )
             )
+            setPadding(100, 0, 100, 0)
             isMyLocationEnabled = false
             uiSettings.apply {
                 isMapToolbarEnabled = false
@@ -108,7 +109,7 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
                 .color(Color.WHITE)
         )
         googleMap?.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(route.bounds.latLngBounds().center, 16.5f)
+            CameraUpdateFactory.newLatLngBounds(route.bounds.latLngBounds(), 0)
         )
 
         setupViews(route)
@@ -129,7 +130,7 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
 
     private fun startGoogleMapsNavigation() {
         startActivity(
-            Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=${poi.latLng.formatted()}"))
+            Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=${poi.latLng.formatted()}&mode=w"))
         )
     }
 

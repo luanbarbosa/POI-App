@@ -62,7 +62,12 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMapReady(gMap: GoogleMap) {
         googleMap = gMap
         googleMap?.apply {
-            setMapStyle(MapStyleOptions.loadRawResourceStyle(this@ActivityMain, R.raw.google_maps_style))
+            setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this@ActivityMain,
+                    R.raw.google_maps_style
+                )
+            )
             setOnMarkerClickListener(this@ActivityMain)
             centerOnHelsinki()
         }
@@ -151,15 +156,6 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
-    private fun centerOnHelsinki() {
-        googleMap?.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(60.169857, 24.938379),
-                10f
-            )
-        )
-    }
-
     private fun moveToLocation(location: Location) {
         googleMap?.animateCamera(
             CameraUpdateFactory.newLatLngZoom(location.latLong, CURRENT_LOCATION_ZOOM)
@@ -172,3 +168,10 @@ class ActivityMain : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
 }
+
+fun GoogleMap.centerOnHelsinki() = moveCamera(
+    CameraUpdateFactory.newLatLngZoom(
+        LatLng(60.169857, 24.938379),
+        10f
+    )
+)

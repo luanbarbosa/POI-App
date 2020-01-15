@@ -26,19 +26,18 @@ class PoiViewModel @Inject constructor(
             .fetchPoiList(location)
             .subscribe { poiList, error ->
                 poiList?.let { poiListSubject.onNext(it) }
-                error?.let { errorSubject.onNext(error) }
+                error?.let { errorSubject.onError(error) }
             }
             .addTo(disposeBag)
     }
 
-    fun poiDetailsObservable(poi: Poi): Single<Poi?> =
+    fun poiDetailsObservable(poi: Poi): Single<Poi> =
         poiProvider
             .fetchPoiDetails(poi.pageId)
             .flatMap { poiDetails ->
                 poiProvider
                     .fetchImagesUrl(poiDetails.images?.map { it.title } ?: listOf())
-                    .onErrorReturn { null }
+                    .onErrorReturn { listOf() }
                     .map { urls -> poiDetails.apply { imageUrls = urls } }
             }
-            .subscribeOn(Schedulers.io())
 }

@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import com.google.maps.android.PolyUtil
 import com.luanbarbosagomes.poiapp.App
 import com.luanbarbosagomes.poiapp.R
+import com.luanbarbosagomes.poiapp.feature.main.centerOnHelsinki
 import com.luanbarbosagomes.poiapp.provider.location.Location
 import com.luanbarbosagomes.poiapp.provider.navigation.DirectionsResponse
 import com.luanbarbosagomes.poiapp.provider.navigation.formatted
@@ -70,6 +71,7 @@ class ActivityNavigation : AppCompatActivity(), OnMapReadyCallback {
                 isMapToolbarEnabled = false
                 isMyLocationButtonEnabled = false
             }
+            centerOnHelsinki()
         }
 
         loadDirections()

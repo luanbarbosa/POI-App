@@ -4,12 +4,14 @@ import com.luanbarbosagomes.poiapp.LocationUtils.espoo
 import com.luanbarbosagomes.poiapp.LocationUtils.helsinki
 import com.luanbarbosagomes.poiapp.PoiUtils.poi1
 import com.luanbarbosagomes.poiapp.PoiUtils.poi2
+import com.luanbarbosagomes.poiapp.PoiUtils.url
 import com.luanbarbosagomes.poiapp.provider.poi.PoiProvider
 import com.luanbarbosagomes.poiapp.provider.poi.PoiViewModel
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import io.reactivex.Single
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import org.junit.Test
 
 class PoiViewModelTest {
@@ -42,4 +44,43 @@ class PoiViewModelTest {
             assertValueAt(1, listOf(poi2))
         }
     }
+
+    @Test
+    fun `POI details call will inject image URLs to the provided POI`() {
+        every { poiProvider.fetchPoiDetails(any()) } returns Single.just(poi1)
+        every { poiProvider.fetchImagesUrl(any()) } returns Single.just(listOf(url))
+
+        with(sut.poiDetailsObservable(poi1).test()) {
+            verify { poiProvider.fetchImagesUrl(any()) }
+            assertEquals(1, valueCount())
+            assertValueAt(0, poi1)
+            val emittedPoi = values().first()
+            assertNotNull(emittedPoi?.imageUrls)
+            assertEquals(url, emittedPoi?.imageUrls?.first())
+        }
+    }
+
+    @Test
+    fun `POI details fetching will not fail if images URL fetching fails`() {
+        every { poiProvider.fetchPoiDetails(any()) } returns Single.just(poi1)
+        every { poiProvider.fetchImagesUrl(any()) } returns Single.error(Boom())
+
+        with(sut.poiDetailsObservable(poi1).test()) {
+            assertEquals(1, valueCount())
+            assertValueAt(0, poi1)
+            assertTrue(values().first()?.imageUrls?.isEmpty() == true)
+        }
+    }
+
+    @Test
+    fun `Error is emitted in case of POI details call failure`() {
+        every { poiProvider.fetchPoiDetails(any()) } returns Single.error(Boom())
+
+        with(sut.poiDetailsObservable(poi1).test()) {
+            assertFailure(Boom::class.java)
+            verify(exactly = 0) { poiProvider.fetchImagesUrl(any()) }
+        }
+    }
 }
+
+class Boom: Throwable()

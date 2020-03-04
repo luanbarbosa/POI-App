@@ -30,7 +30,7 @@ class DirectionsProvider @Inject constructor() {
             "&destination=${destination.formatted()}" +
             "&mode=walking" +
             "&units=metric" +
-            "&key=AIzaSyAS37i53WSJR3JNqA7BkxdvNXjz2TTzJ0A"
+            "&key=<YOUR_KEY>"
 
 }
 
